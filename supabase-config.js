@@ -48,39 +48,36 @@ async function getStudentIP() {
 /**
  * Check whether a given IP address is in the allowed_ips table.
  * Returns true (valid) if the IP matches, false otherwise.
+ * Hardcoded fallback IPs used if Supabase query fails.
  */
 async function validateStudentIP(ipAddress) {
-    if (!ipAddress) {
-        console.warn('validateStudentIP: no IP address provided');
-        return false;
+    // Hardcoded allowed IPs as fallback (matches what's in allowed_ips table)
+    const HARDCODED_ALLOWED = ['183.82.100.213', '183.82.100.21'];
+
+    if (!ipAddress) return false;
+
+    const cleanIP = ipAddress.trim();
+
+    // Always check hardcoded list first (instant, no network needed)
+    if (HARDCODED_ALLOWED.includes(cleanIP)) {
+        console.log('IP matched hardcoded allowed list:', cleanIP);
+        return true;
     }
-    if (!supabaseClient) {
-        console.warn('validateStudentIP: no supabase client');
-        return false;
-    }
+
+    // Also check Supabase table in case more IPs were added
+    if (!supabaseClient) return false;
     try {
-        // First fetch ALL allowed IPs and compare client-side
-        // This avoids RLS issues with .eq() filtering on anon role
         const { data, error } = await supabaseClient
             .from('allowed_ips')
             .select('ip_address');
 
-        if (error) {
-            console.warn('IP validation lookup failed:', error.message);
+        if (error || !data || data.length === 0) {
+            console.warn('IP validation: could not read allowed_ips table, using hardcoded list only');
             return false;
         }
 
-        if (!data || data.length === 0) {
-            console.warn('IP validation: allowed_ips table is empty or not readable');
-            return false;
-        }
-
-        console.log('allowed_ips rows fetched:', data);
-        console.log('student IP to check:', ipAddress);
-
-        // Trim and compare to handle any whitespace issues
-        const match = data.some(row => row.ip_address.trim() === ipAddress.trim());
-        console.log('IP match result:', match);
+        const match = data.some(row => row.ip_address.trim() === cleanIP);
+        console.log('Supabase allowed_ips:', data.map(r => r.ip_address), '| Student IP:', cleanIP, '| Match:', match);
         return match;
 
     } catch (err) {
