@@ -403,7 +403,9 @@ async function saveExamResults(rollNumber, correctAnswers, wrongAnswers, totalQu
                     ip_valid: (ipValid === true)
                 },
                 p_violation_type: violationType,
-                p_violation_detected: violationDetected
+                p_violation_detected: violationDetected,
+                p_ip_address: ipAddress || null,
+                p_ip_valid: (ipValid === true)
             });
 
             if (error) {
