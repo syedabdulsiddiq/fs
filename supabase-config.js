@@ -24,6 +24,54 @@ if (typeof supabase !== 'undefined') {
     console.error('Supabase library not loaded');
 }
 
+// =========================================================
+// IP VALIDATION HELPERS
+// =========================================================
+
+/**
+ * Fetch the student's current public IP address.
+ * Uses the ipify API (returns plain text IP).
+ * Falls back to null if the request fails.
+ */
+async function getStudentIP() {
+    try {
+        const response = await fetch('https://api.ipify.org?format=json', { cache: 'no-store' });
+        if (!response.ok) return null;
+        const data = await response.json();
+        return data.ip || null;
+    } catch (err) {
+        console.warn('Could not fetch student IP:', err);
+        return null;
+    }
+}
+
+/**
+ * Check whether a given IP address is in the allowed_ips table.
+ * Returns true (valid) if the IP matches, false otherwise.
+ * If the lookup itself fails, defaults to true so the exam is never blocked.
+ */
+async function validateStudentIP(ipAddress) {
+    if (!ipAddress) return false;
+    if (!supabaseClient) return false;
+    try {
+        const { data, error } = await supabaseClient
+            .from('allowed_ips')
+            .select('ip_address')
+            .eq('ip_address', ipAddress)
+            .maybeSingle();
+
+        if (error) {
+            console.warn('IP validation lookup failed:', error.message);
+            return false; // treat as invalid on lookup error
+        }
+        return !!data; // true if a row was found
+    } catch (err) {
+        console.warn('IP validation exception:', err);
+        return false;
+    }
+}
+
+// =========================================================
 // Detect exam type based on unique code
 function detectExamType(uniqueCode) {
     if (uniqueCode === 'fsmba2026') {
@@ -306,7 +354,7 @@ async function validateCredentials(rollNumber, uniqueCode) {
 }
 
 // Save exam results to Supabase
-async function saveExamResults(rollNumber, correctAnswers, wrongAnswers, totalQuestions, percentage, userAnswers, shuffledQuestions) {
+async function saveExamResults(rollNumber, correctAnswers, wrongAnswers, totalQuestions, percentage, userAnswers, shuffledQuestions, ipAddress, ipValid) {
     if (!supabaseClient) {
         console.warn('Supabase client not initialized - results will not be saved');
         return { success: true, warning: 'Results not saved - Supabase not configured' };
@@ -350,7 +398,9 @@ async function saveExamResults(rollNumber, correctAnswers, wrongAnswers, totalQu
                     score: `${correctAnswers}/${totalQuestions}`,
                     shuffled_questions: shuffledQuestions,
                     exam_date: new Date().toISOString(),
-                    exam_completed: true
+                    exam_completed: true,
+                    ip_address: ipAddress || null,
+                    ip_valid: (ipValid === true)
                 },
                 p_violation_type: violationType,
                 p_violation_detected: violationDetected
@@ -384,7 +434,9 @@ async function saveExamResults(rollNumber, correctAnswers, wrongAnswers, totalQu
             percentage: percentage,
             user_answers: userAnswers,
             violation_detected: violationDetected,
-            violation_type: violationType
+            violation_type: violationType,
+            ip_address: ipAddress || null,
+            ip_valid: (ipValid === true)
         };
         
         if (examType.type === 'THIRDIT' || examType.type === 'FS1CSE' || examType.type === 'FS1AIDS' || examType.type === 'FS1IT' || examType.type === 'FS1CIVIL') {
@@ -400,7 +452,9 @@ async function saveExamResults(rollNumber, correctAnswers, wrongAnswers, totalQu
             score: `${correctAnswers}/${totalQuestions}`,
             shuffled_questions: shuffledQuestions,
             exam_date: new Date().toISOString(),
-            exam_completed: true
+            exam_completed: true,
+            ip_address: ipAddress || null,
+            ip_valid: (ipValid === true)
         };
         
         const { data, error } = await supabaseClient

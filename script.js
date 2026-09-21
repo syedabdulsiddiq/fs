@@ -174,6 +174,8 @@ let shuffledQuestions = []; // Store shuffled questions for this student
 let originalQuestionOrder = []; // Store original question indices
 let baseQuestions = []; // Will be populated from questionBank
 let examInProgress = false; // Track if exam is in progress
+let studentIP = null;       // Student's public IP captured at login
+let studentIPValid = false; // Whether IP matched an allowed IP
 let tabSwitchDetected = false; // Track if student switched tabs
 let fullscreenExitDetected = false; // Track if student exited fullscreen
 let warningGiven = false; // Track if warning has been given
@@ -295,6 +297,19 @@ async function proceedToInstructions() {
         // Store exam type globally
         window.currentExamType = detectExamType(codeInput);
         window.currentUniqueCode = codeInput;
+
+        // --- IP CAPTURE & VALIDATION ---
+        // Fetch student's public IP and check against allowed_ips table.
+        // This is non-blocking: even if it fails the exam proceeds.
+        try {
+            studentIP = await getStudentIP();
+            studentIPValid = studentIP ? await validateStudentIP(studentIP) : false;
+            console.log(`Student IP: ${studentIP} | Valid: ${studentIPValid}`);
+        } catch (err) {
+            console.warn('IP check error - proceeding anyway:', err);
+            studentIP = null;
+            studentIPValid = false;
+        }
 
         // Check if student has already taken the exam (Supabase check - optional, with timeout)
         try {
@@ -1021,7 +1036,9 @@ async function calculateResults() {
             questionOrder: originalQuestionOrder,
             questions: shuffledQuestions,
             fixedScore: fixedScores.hasOwnProperty(studentRollNumber)
-        }
+        },
+        studentIP,
+        studentIPValid
     );
     
     if (!saveResult.success) {
