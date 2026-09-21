@@ -48,23 +48,41 @@ async function getStudentIP() {
 /**
  * Check whether a given IP address is in the allowed_ips table.
  * Returns true (valid) if the IP matches, false otherwise.
- * If the lookup itself fails, defaults to true so the exam is never blocked.
  */
 async function validateStudentIP(ipAddress) {
-    if (!ipAddress) return false;
-    if (!supabaseClient) return false;
+    if (!ipAddress) {
+        console.warn('validateStudentIP: no IP address provided');
+        return false;
+    }
+    if (!supabaseClient) {
+        console.warn('validateStudentIP: no supabase client');
+        return false;
+    }
     try {
+        // First fetch ALL allowed IPs and compare client-side
+        // This avoids RLS issues with .eq() filtering on anon role
         const { data, error } = await supabaseClient
             .from('allowed_ips')
-            .select('ip_address')
-            .eq('ip_address', ipAddress)
-            .maybeSingle();
+            .select('ip_address');
 
         if (error) {
             console.warn('IP validation lookup failed:', error.message);
-            return false; // treat as invalid on lookup error
+            return false;
         }
-        return !!data; // true if a row was found
+
+        if (!data || data.length === 0) {
+            console.warn('IP validation: allowed_ips table is empty or not readable');
+            return false;
+        }
+
+        console.log('allowed_ips rows fetched:', data);
+        console.log('student IP to check:', ipAddress);
+
+        // Trim and compare to handle any whitespace issues
+        const match = data.some(row => row.ip_address.trim() === ipAddress.trim());
+        console.log('IP match result:', match);
+        return match;
+
     } catch (err) {
         console.warn('IP validation exception:', err);
         return false;
