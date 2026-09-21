@@ -409,12 +409,10 @@ async function saveExamResults(rollNumber, correctAnswers, wrongAnswers, totalQu
                     shuffled_questions: shuffledQuestions,
                     exam_date: new Date().toISOString(),
                     exam_completed: true,
-                    ip_address: ipAddress || null,
                     ip_valid: (ipValid === true)
                 },
                 p_violation_type: violationType,
                 p_violation_detected: violationDetected,
-                p_ip_address: ipAddress || null,
                 p_ip_valid: (ipValid === true)
             });
 
@@ -447,7 +445,6 @@ async function saveExamResults(rollNumber, correctAnswers, wrongAnswers, totalQu
             user_answers: userAnswers,
             violation_detected: violationDetected,
             violation_type: violationType,
-            ip_address: ipAddress || null,
             ip_valid: (ipValid === true)
         };
         
@@ -465,7 +462,6 @@ async function saveExamResults(rollNumber, correctAnswers, wrongAnswers, totalQu
             shuffled_questions: shuffledQuestions,
             exam_date: new Date().toISOString(),
             exam_completed: true,
-            ip_address: ipAddress || null,
             ip_valid: (ipValid === true)
         };
         
