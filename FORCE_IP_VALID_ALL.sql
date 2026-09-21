@@ -196,33 +196,113 @@ END $$;
 
 -- =========================================================
 -- NOW UPDATE EVERY EXISTING ROW TO ip_valid = TRUE
--- Bypasses RLS by running as superuser in SQL editor
+-- Each block checks table exists first - safe on any Supabase
 -- =========================================================
 
-UPDATE fcse_exam_results    SET ip_valid = TRUE, ip_address = COALESCE(ip_address, '183.82.100.213') WHERE ip_valid IS NULL OR ip_valid = FALSE;
-UPDATE faids_exam_results   SET ip_valid = TRUE, ip_address = COALESCE(ip_address, '183.82.100.213') WHERE ip_valid IS NULL OR ip_valid = FALSE;
-UPDATE fit_exam_results     SET ip_valid = TRUE, ip_address = COALESCE(ip_address, '183.82.100.213') WHERE ip_valid IS NULL OR ip_valid = FALSE;
-UPDATE fcivil_exam_results  SET ip_valid = TRUE, ip_address = COALESCE(ip_address, '183.82.100.213') WHERE ip_valid IS NULL OR ip_valid = FALSE;
-UPDATE ffcse_exam_results   SET ip_valid = TRUE, ip_address = COALESCE(ip_address, '183.82.100.213') WHERE ip_valid IS NULL OR ip_valid = FALSE;
-UPDATE ffaids_exam_results  SET ip_valid = TRUE, ip_address = COALESCE(ip_address, '183.82.100.213') WHERE ip_valid IS NULL OR ip_valid = FALSE;
-UPDATE ffit_exam_results    SET ip_valid = TRUE, ip_address = COALESCE(ip_address, '183.82.100.213') WHERE ip_valid IS NULL OR ip_valid = FALSE;
-UPDATE ffece_exam_results   SET ip_valid = TRUE, ip_address = COALESCE(ip_address, '183.82.100.213') WHERE ip_valid IS NULL OR ip_valid = FALSE;
-UPDATE fece_exam_results    SET ip_valid = TRUE, ip_address = COALESCE(ip_address, '183.82.100.213') WHERE ip_valid IS NULL OR ip_valid = FALSE;
-UPDATE fffcse_exam_results  SET ip_valid = TRUE, ip_address = COALESCE(ip_address, '183.82.100.213') WHERE ip_valid IS NULL OR ip_valid = FALSE;
-UPDATE fffece_exam_results  SET ip_valid = TRUE, ip_address = COALESCE(ip_address, '183.82.100.213') WHERE ip_valid IS NULL OR ip_valid = FALSE;
-UPDATE fffaids_exam_results SET ip_valid = TRUE, ip_address = COALESCE(ip_address, '183.82.100.213') WHERE ip_valid IS NULL OR ip_valid = FALSE;
-UPDATE fffit_exam_results   SET ip_valid = TRUE, ip_address = COALESCE(ip_address, '183.82.100.213') WHERE ip_valid IS NULL OR ip_valid = FALSE;
-UPDATE fffcivil_exam_results SET ip_valid = TRUE, ip_address = COALESCE(ip_address, '183.82.100.213') WHERE ip_valid IS NULL OR ip_valid = FALSE;
-UPDATE fs4cse_exam_results  SET ip_valid = TRUE, ip_address = COALESCE(ip_address, '183.82.100.213') WHERE ip_valid IS NULL OR ip_valid = FALSE;
-UPDATE fs4it_exam_results   SET ip_valid = TRUE, ip_address = COALESCE(ip_address, '183.82.100.213') WHERE ip_valid IS NULL OR ip_valid = FALSE;
-UPDATE thirdit_exam_results SET ip_valid = TRUE, ip_address = COALESCE(ip_address, '183.82.100.213') WHERE ip_valid IS NULL OR ip_valid = FALSE;
-UPDATE thirdcse_exam_results SET ip_valid = TRUE, ip_address = COALESCE(ip_address, '183.82.100.213') WHERE ip_valid IS NULL OR ip_valid = FALSE;
-UPDATE fs1cse_exam_results  SET ip_valid = TRUE, ip_address = COALESCE(ip_address, '183.82.100.213') WHERE ip_valid IS NULL OR ip_valid = FALSE;
-UPDATE fs1aids_exam_results SET ip_valid = TRUE, ip_address = COALESCE(ip_address, '183.82.100.213') WHERE ip_valid IS NULL OR ip_valid = FALSE;
-UPDATE fs1it_exam_results   SET ip_valid = TRUE, ip_address = COALESCE(ip_address, '183.82.100.213') WHERE ip_valid IS NULL OR ip_valid = FALSE;
-UPDATE fs1civil_exam_results SET ip_valid = TRUE, ip_address = COALESCE(ip_address, '183.82.100.213') WHERE ip_valid IS NULL OR ip_valid = FALSE;
-UPDATE cse_exam_results     SET ip_valid = TRUE, ip_address = COALESCE(ip_address, '183.82.100.213') WHERE ip_valid IS NULL OR ip_valid = FALSE;
-UPDATE ece_exam_results     SET ip_valid = TRUE, ip_address = COALESCE(ip_address, '183.82.100.213') WHERE ip_valid IS NULL OR ip_valid = FALSE;
-UPDATE aids_exam_results    SET ip_valid = TRUE, ip_address = COALESCE(ip_address, '183.82.100.213') WHERE ip_valid IS NULL OR ip_valid = FALSE;
-UPDATE mba_regular_exam_results SET ip_valid = TRUE, ip_address = COALESCE(ip_address, '183.82.100.213') WHERE ip_valid IS NULL OR ip_valid = FALSE;
-UPDATE exam_results         SET ip_valid = TRUE, ip_address = COALESCE(ip_address, '183.82.100.213') WHERE ip_valid IS NULL OR ip_valid = FALSE;
+DO $$ BEGIN IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'fcse_exam_results') THEN
+  UPDATE fcse_exam_results    SET ip_valid = TRUE, ip_address = COALESCE(ip_address, '183.82.100.213') WHERE ip_valid IS NULL OR ip_valid = FALSE;
+END IF; END $$;
+
+DO $$ BEGIN IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'faids_exam_results') THEN
+  UPDATE faids_exam_results   SET ip_valid = TRUE, ip_address = COALESCE(ip_address, '183.82.100.213') WHERE ip_valid IS NULL OR ip_valid = FALSE;
+END IF; END $$;
+
+DO $$ BEGIN IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'fit_exam_results') THEN
+  UPDATE fit_exam_results     SET ip_valid = TRUE, ip_address = COALESCE(ip_address, '183.82.100.213') WHERE ip_valid IS NULL OR ip_valid = FALSE;
+END IF; END $$;
+
+DO $$ BEGIN IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'fcivil_exam_results') THEN
+  UPDATE fcivil_exam_results  SET ip_valid = TRUE, ip_address = COALESCE(ip_address, '183.82.100.213') WHERE ip_valid IS NULL OR ip_valid = FALSE;
+END IF; END $$;
+
+DO $$ BEGIN IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'ffcse_exam_results') THEN
+  UPDATE ffcse_exam_results   SET ip_valid = TRUE, ip_address = COALESCE(ip_address, '183.82.100.213') WHERE ip_valid IS NULL OR ip_valid = FALSE;
+END IF; END $$;
+
+DO $$ BEGIN IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'ffaids_exam_results') THEN
+  UPDATE ffaids_exam_results  SET ip_valid = TRUE, ip_address = COALESCE(ip_address, '183.82.100.213') WHERE ip_valid IS NULL OR ip_valid = FALSE;
+END IF; END $$;
+
+DO $$ BEGIN IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'ffit_exam_results') THEN
+  UPDATE ffit_exam_results    SET ip_valid = TRUE, ip_address = COALESCE(ip_address, '183.82.100.213') WHERE ip_valid IS NULL OR ip_valid = FALSE;
+END IF; END $$;
+
+DO $$ BEGIN IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'ffece_exam_results') THEN
+  UPDATE ffece_exam_results   SET ip_valid = TRUE, ip_address = COALESCE(ip_address, '183.82.100.213') WHERE ip_valid IS NULL OR ip_valid = FALSE;
+END IF; END $$;
+
+DO $$ BEGIN IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'fece_exam_results') THEN
+  UPDATE fece_exam_results    SET ip_valid = TRUE, ip_address = COALESCE(ip_address, '183.82.100.213') WHERE ip_valid IS NULL OR ip_valid = FALSE;
+END IF; END $$;
+
+DO $$ BEGIN IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'fffcse_exam_results') THEN
+  UPDATE fffcse_exam_results  SET ip_valid = TRUE, ip_address = COALESCE(ip_address, '183.82.100.213') WHERE ip_valid IS NULL OR ip_valid = FALSE;
+END IF; END $$;
+
+DO $$ BEGIN IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'fffece_exam_results') THEN
+  UPDATE fffece_exam_results  SET ip_valid = TRUE, ip_address = COALESCE(ip_address, '183.82.100.213') WHERE ip_valid IS NULL OR ip_valid = FALSE;
+END IF; END $$;
+
+DO $$ BEGIN IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'fffaids_exam_results') THEN
+  UPDATE fffaids_exam_results SET ip_valid = TRUE, ip_address = COALESCE(ip_address, '183.82.100.213') WHERE ip_valid IS NULL OR ip_valid = FALSE;
+END IF; END $$;
+
+DO $$ BEGIN IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'fffit_exam_results') THEN
+  UPDATE fffit_exam_results   SET ip_valid = TRUE, ip_address = COALESCE(ip_address, '183.82.100.213') WHERE ip_valid IS NULL OR ip_valid = FALSE;
+END IF; END $$;
+
+DO $$ BEGIN IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'fffcivil_exam_results') THEN
+  UPDATE fffcivil_exam_results SET ip_valid = TRUE, ip_address = COALESCE(ip_address, '183.82.100.213') WHERE ip_valid IS NULL OR ip_valid = FALSE;
+END IF; END $$;
+
+DO $$ BEGIN IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'fs4cse_exam_results') THEN
+  UPDATE fs4cse_exam_results  SET ip_valid = TRUE, ip_address = COALESCE(ip_address, '183.82.100.213') WHERE ip_valid IS NULL OR ip_valid = FALSE;
+END IF; END $$;
+
+DO $$ BEGIN IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'fs4it_exam_results') THEN
+  UPDATE fs4it_exam_results   SET ip_valid = TRUE, ip_address = COALESCE(ip_address, '183.82.100.213') WHERE ip_valid IS NULL OR ip_valid = FALSE;
+END IF; END $$;
+
+DO $$ BEGIN IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'thirdit_exam_results') THEN
+  UPDATE thirdit_exam_results SET ip_valid = TRUE, ip_address = COALESCE(ip_address, '183.82.100.213') WHERE ip_valid IS NULL OR ip_valid = FALSE;
+END IF; END $$;
+
+DO $$ BEGIN IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'thirdcse_exam_results') THEN
+  UPDATE thirdcse_exam_results SET ip_valid = TRUE, ip_address = COALESCE(ip_address, '183.82.100.213') WHERE ip_valid IS NULL OR ip_valid = FALSE;
+END IF; END $$;
+
+DO $$ BEGIN IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'fs1cse_exam_results') THEN
+  UPDATE fs1cse_exam_results  SET ip_valid = TRUE, ip_address = COALESCE(ip_address, '183.82.100.213') WHERE ip_valid IS NULL OR ip_valid = FALSE;
+END IF; END $$;
+
+DO $$ BEGIN IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'fs1aids_exam_results') THEN
+  UPDATE fs1aids_exam_results SET ip_valid = TRUE, ip_address = COALESCE(ip_address, '183.82.100.213') WHERE ip_valid IS NULL OR ip_valid = FALSE;
+END IF; END $$;
+
+DO $$ BEGIN IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'fs1it_exam_results') THEN
+  UPDATE fs1it_exam_results   SET ip_valid = TRUE, ip_address = COALESCE(ip_address, '183.82.100.213') WHERE ip_valid IS NULL OR ip_valid = FALSE;
+END IF; END $$;
+
+DO $$ BEGIN IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'fs1civil_exam_results') THEN
+  UPDATE fs1civil_exam_results SET ip_valid = TRUE, ip_address = COALESCE(ip_address, '183.82.100.213') WHERE ip_valid IS NULL OR ip_valid = FALSE;
+END IF; END $$;
+
+DO $$ BEGIN IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'cse_exam_results') THEN
+  UPDATE cse_exam_results     SET ip_valid = TRUE, ip_address = COALESCE(ip_address, '183.82.100.213') WHERE ip_valid IS NULL OR ip_valid = FALSE;
+END IF; END $$;
+
+DO $$ BEGIN IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'ece_exam_results') THEN
+  UPDATE ece_exam_results     SET ip_valid = TRUE, ip_address = COALESCE(ip_address, '183.82.100.213') WHERE ip_valid IS NULL OR ip_valid = FALSE;
+END IF; END $$;
+
+DO $$ BEGIN IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'aids_exam_results') THEN
+  UPDATE aids_exam_results    SET ip_valid = TRUE, ip_address = COALESCE(ip_address, '183.82.100.213') WHERE ip_valid IS NULL OR ip_valid = FALSE;
+END IF; END $$;
+
+DO $$ BEGIN IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'mba_regular_exam_results') THEN
+  UPDATE mba_regular_exam_results SET ip_valid = TRUE, ip_address = COALESCE(ip_address, '183.82.100.213') WHERE ip_valid IS NULL OR ip_valid = FALSE;
+END IF; END $$;
+
+DO $$ BEGIN IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'exam_results') THEN
+  UPDATE exam_results         SET ip_valid = TRUE, ip_address = COALESCE(ip_address, '183.82.100.213') WHERE ip_valid IS NULL OR ip_valid = FALSE;
+END IF; END $$;
