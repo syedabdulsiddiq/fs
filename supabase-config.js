@@ -47,37 +47,32 @@ async function getStudentIP() {
 
 /**
  * Check whether a given IP address is in the allowed_ips table.
- * Returns true (valid) if the IP matches, false otherwise.
- * Hardcoded fallback IPs used if Supabase query fails.
+ * Returns true (valid) if the IP matches a row in allowed_ips.
+ * To change allowed IPs, just update the allowed_ips table in Supabase.
  */
 async function validateStudentIP(ipAddress) {
-    // Hardcoded allowed IPs as fallback (matches what's in allowed_ips table)
-    const HARDCODED_ALLOWED = ['183.82.100.213', '183.82.100.21'];
-
     if (!ipAddress) return false;
+    if (!supabaseClient) return false;
 
     const cleanIP = ipAddress.trim();
 
-    // Always check hardcoded list first (instant, no network needed)
-    if (HARDCODED_ALLOWED.includes(cleanIP)) {
-        console.log('IP matched hardcoded allowed list:', cleanIP);
-        return true;
-    }
-
-    // Also check Supabase table in case more IPs were added
-    if (!supabaseClient) return false;
     try {
         const { data, error } = await supabaseClient
             .from('allowed_ips')
             .select('ip_address');
 
-        if (error || !data || data.length === 0) {
-            console.warn('IP validation: could not read allowed_ips table, using hardcoded list only');
+        if (error) {
+            console.warn('IP validation lookup failed:', error.message);
+            return false;
+        }
+
+        if (!data || data.length === 0) {
+            console.warn('IP validation: allowed_ips table is empty or not readable');
             return false;
         }
 
         const match = data.some(row => row.ip_address.trim() === cleanIP);
-        console.log('Supabase allowed_ips:', data.map(r => r.ip_address), '| Student IP:', cleanIP, '| Match:', match);
+        console.log('Allowed IPs:', data.map(r => r.ip_address), '| Student IP:', cleanIP, '| Valid:', match);
         return match;
 
     } catch (err) {
